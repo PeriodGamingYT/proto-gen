@@ -1,0 +1,8 @@
+window
+pos-client vec client
+pos-server vec server
+size-client vec client
+size-server vec server
+id int server
+str-size int client
+str buf client

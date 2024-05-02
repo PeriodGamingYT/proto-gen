@@ -1,0 +1,16 @@
+*.kdev4
+*.o
+*.so
+*.a
+*.gch
+proto-gen.h
+proto-gen-client.h
+proto-gen-server.h
+debug-gen.h
+debug-gen-client.h
+debug-gen-server.h
+default-gen.h
+text-win-proto-gen
+vgcore.*
+client
+server

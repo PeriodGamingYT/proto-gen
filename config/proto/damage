@@ -1,0 +1,4 @@
+window
+pos vec client
+size vec client
+fix buf client

@@ -1,0 +1,5 @@
+mouse-hog
+is-lock-mouse int client
+is-hide int client
+is-warp int client
+warp-pos vec client

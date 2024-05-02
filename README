@@ -1,0 +1,118 @@
+text-win is a multi-part project.
+the first part of this project is similar to how googles protocol format works.
+you give a file (our's uses a folder/file structure) and it generates code to interface with that
+protocol.
+
+however googles project is too complex for this, so we went with our own solution, 
+text-win-proto-gen.
+
+here's how it works:
+	config/
+		proto/
+			data-type-0
+			data-type-1
+			...
+			data-type-n
+		
+		...
+
+the core config file stores everything that the protocol might need to configure.
+the folder has folders inside of it meant for different parts of this project.
+text-win-proto-gen uses the config/proto folder for itself.
+you give a list of data types, each files name represents what the data structure will be called.
+inside of the data structure is this (in files, "n/a" doesn't use quotes):
+	permission/"n/a"
+	name int/buf/custom_type client/server/"n/a"
+	...
+
+each data types needs a permission, unless its "n/a".
+each of the data types have a name, which is either an int, buffer (buf), or another data type 
+defined in the config/proto folder, which is what the "custom_type" is, (custom_type isn't a 
+built-in type, and doesn't exist unless specified in config/proto). 
+
+
+the "buf" type is a type that can be of any size, but the size needs to be able to be figured out
+by user-filled function, that returns the buffer size to a given pointer.
+
+the "int" type is just a simple int in C.
+this all is plugged into text-win-proto-gen, which depending on whether you give the "--is-client"
+option or the "--is-server" option, will generate a macro which will preconfigure it either for a 
+server or client side header.
+
+the client/server/"n/a" part means it has to be sent from the client, server, or no such thing is
+enforced and will do either mode.
+
+the auto-generated code has several sections:
+	starting include guard:
+		self-explanitory
+	
+	inter.h:
+		this is a human written interface that takes care of server/client
+		things. 
+		
+		it's the boilerplate of the auto-generated file.
+	
+	flag macros:
+		since every data type can have a permission, we need a way to keep track of it.
+		the way the we do that is with the bits in a uint64_t.
+		the code is not yet smart enough to figure out when it doesn't need to reuse a
+		macro, it's wrapped inside of an #ifdef and #endif to prevent macro redefinition.
+	
+	type macros:
+		since multiple data types can be sent to the server, the server needs to know
+		which can be anything, we need to differentiate between them, such is the purpose of
+		the type macros.
+	
+	struct declarations:
+		since any data type can reuse any other data type (not itself), 
+		without any need for proper ordering, these structs exist to prevent the
+		need for an order of data types.
+	
+	function declarations:
+		these exist for the same reason why struct declarations exist
+	
+	struct implementations:
+		actually implement the structs, implement like implementing a functions
+		actual function.
+		
+		it doesn't reuse other types due to implementation issues (can't use
+		pointers because that means malloc and malloc is not nice to play
+		with).
+		
+		doesn't reuse other types meaning that it manually creates sub-structs
+		instead of reusing other data type structs
+	
+	function implementations:
+		only partially implemented, anything that the user shouldn't implement
+		(boilerplate) is implemented for the user.
+		
+		it uses the inter.h functions to make the functions easy to 
+		generate.
+		
+		due to the struct implementation issues, all properties of the struct
+		are cast and used as a void pointer.
+	
+	all-in-one data type union:
+		this is so the user can pass in any data type that needs to be filled
+		out by client/server responses.
+	
+	update functions and their size:
+		implementation detail, since the update functions will automatically
+		do all necessary client/server communication.
+		
+		and since the server doesn't know what to communicate, but it knows
+		what data type is sent over, it will be provided an array to 
+		execute the appropitate function, will fail if type would overflow.
+		
+		size exists to prevent arbitrary code execution via overflow in 
+		update function array.
+	
+	ending include guard:
+		self-explaintory
+
+the text-win part of the project actually is a text/terminal window manager.
+right now in the development state is making a demo to see if the auto-generated protocol 
+code works.
+
+the implementation of the protocol (text-win) can be found in impl, which has a client and server
+folder which implements both the client and server side of the window manager.

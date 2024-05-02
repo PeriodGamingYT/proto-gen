@@ -1,0 +1,5 @@
+mouse
+x int server
+y int server
+button-size int server
+buttons buf server

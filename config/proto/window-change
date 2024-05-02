@@ -1,0 +1,4 @@
+window
+change-pos vec server
+change-size vec server
+id int server
