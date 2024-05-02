@@ -1,5 +1,3 @@
-text-win is a multi-part project.
-the first part of this project is similar to how googles protocol format works.
 you give a file (our's uses a folder/file structure) and it generates code to interface with that
 protocol.
 
@@ -109,10 +107,3 @@ the auto-generated code has several sections:
 	
 	ending include guard:
 		self-explaintory
-
-the text-win part of the project actually is a text/terminal window manager.
-right now in the development state is making a demo to see if the auto-generated protocol 
-code works.
-
-the implementation of the protocol (text-win) can be found in impl, which has a client and server
-folder which implements both the client and server side of the window manager.
